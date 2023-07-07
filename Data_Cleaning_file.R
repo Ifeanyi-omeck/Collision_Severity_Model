@@ -200,6 +200,7 @@ final_join$speed_limit[final_join$speed_limit >= 40] <- 1
 
 # Change values of light_conditions 5, 6, 7 to 3
 final_join$light_conditions[final_join$light_conditions %in% c(5, 6, 7)] <- 3
+final_join$light_conditions[final_join$light_conditions == 4] <- 2
 
 # Change values of weather_conditions
 final_join$weather_conditions <- case_when(
@@ -254,8 +255,15 @@ final_join$age_of_driver <- case_when(
   TRUE ~ final_join$age_of_driver
 )
 
-# Modify Values for Age of Driver
-
+# Modify Values for age of Vehicle
+final_join$age_of_vehicle <- case_when(
+  final_join$age_of_vehicle < 3 ~ 0,
+  final_join$age_of_vehicle >= 3 & final_join$age_of_vehicle <= 5 ~ 1,
+  final_join$age_of_vehicle >= 6 & final_join$age_of_vehicle <= 10 ~ 2,
+  final_join$age_of_vehicle >= 11 & final_join$age_of_vehicle <= 15 ~ 3,
+  final_join$age_of_vehicle > 15 ~ 4,
+  TRUE ~ final_join$age_of_vehicle
+)
 
 
 #Save and Export final Data set
