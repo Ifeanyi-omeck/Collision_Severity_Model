@@ -1,31 +1,24 @@
 ziop_marginal_effects <- function(first_mod) {
   
-  """
-  In this code:
-
-- `dist_function` is a reference to the standard normal probability density function, `dnorm`. 
-   This function is used to calculate the difference in the density of the ordered categories 
-   (i.e., the difference in the density of the probability of being in one category versus the next).
-   
+  # dist_function is a reference to the standard normal probability density function, dnorm. 
+  # This function is used to calculate the difference in the density of the ordered categories 
+  # (i.e., the difference in the density of the probability of being in one category versus the next).
   
-- The operations `z[1:lens] - c(xb)` and `z[2:(lens + 1)] - c(xb)`
-      represent the calculation of the z-scores for each category. 
-      Here, `lens` refers to the number of categories in the response variable, 
-       and `xb` represents the predicted values on the linear scale (the X?? part of the model).
-
-- After calculating the differences in densities, 
-   these are multiplied by the model's coefficient estimates (stored in `model_estimates`)
-    to obtain the marginal effects. This operation represents the change in the predicted probability 
-    of being in each category for a one-unit increase in the respective predictor, assuming other predictors are held constant.
-
-- The assumption that all other predictors are held constant is 
-  implicit in the way the linear predictor `xb` is calculated. 
-  It is computed at the mean of the predictor variables (`x_lin_bar`), 
-  which in effect assumes that all other predictors are held constant at their means when calculating the marginal effects.
-  This is a common approach in calculating marginal effects.
-
+  # The operations z[1:lens] - c(xb) and  z[2:(lens + 1)] - c(xb)
+  # represent the calculation of the z-scores for each category. 
+  # Here, lens refers to the number of categories in the response variable, 
+  # and xb represents the predicted values on the linear scale (the X?? part of the model).
   
- """
+  # After calculating the differences in densities, 
+  # these are multiplied by the models coefficient estimates (stored in model_estimates)
+  # to obtain the marginal effects. This operation represents the change in the predicted probability 
+  # of being in each category for a one-unit increase in the respective predictor, assuming other predictors are held constant.
+  
+  # The assumption that all other predictors are held constant is 
+  # implicit in the way the linear predictor xb is calculated. 
+  # It is computed at the mean of the predictor variables (x_lin_bar), 
+  # which in effect assumes that all other predictors are held constant at their means when calculating the marginal effects.
+  # This is a common approach in calculating marginal effects.
   
   # Extract Estimates from the model
   cat_y_variable <- unique(first_mod$y)
@@ -40,11 +33,11 @@ ziop_marginal_effects <- function(first_mod) {
   len_model_estimates <- nrow(summary(first_mod)$coefficients[-c(1,2), ])
   xb <- t(x_lin_bar) %*% model_estimates
   
-  # Setting lower Bound Threshold for the cutpoints
+  # Setting lower Bound Threshold for the cut-points
   z <-  summary(first_mod)$coefficients[grep("^cut", rownames(summary(first_mod)$coefficients)), "Estimate"]
   z <- c(-10^6, z, 10^6)
   
-  # Exantiating Probit Function
+  # Instantiating Probit Function
   dist_function <- dnorm
   prob_function <- pnorm
   
@@ -59,19 +52,19 @@ ziop_marginal_effects <- function(first_mod) {
   effects.xb <- dist_function(z[1:lens] - c(xb)) -dist_function(z[2:(lens + 1)] -c(xb))
   marg_effects <- model_estimates %*% matrix(data =  effects.xb, nrow = 1)
   
-  #Passing variables to a dataframe
+  # Passing variables to a data frame
   marg_effects_df <- as.data.frame(marg_effects)
   
   # Assign column names as row names
   column_names <- gsub("^X", "", column_names)  # Remove "X" from row names
   row.names(marg_effects_df) <- column_names
   
-  #Renaming the Marginal effect Column dataframe
+  # Renaming the Marginal effect Column data frame
   col_names <- paste("marginal_effect", 1:ncol(marg_effects_df))
   colnames(marg_effects_df) <- col_names
- 
-  return(marg_effects_df)
   
-  }
+  return(marg_effects_df)
+}
+
 
 ziop_marginal_effects(model_ziop)
