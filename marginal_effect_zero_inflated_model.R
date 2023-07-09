@@ -31,10 +31,19 @@ ziop_marginal_effects <- function(first_mod) {
   # Calculating the Marginal Effects
   effects.xb <- dist_function(z[1:lens] - c(xb)) -dist_function(z[2:(lens + 1)] -c(xb))
   marg_effects <- model_estimates %*% matrix(data =  effects.xb, nrow = 1)
-  #colnames(marg_effects) <- paste("probit_effect", lens, sep = "." )
-  print(marg_effects)
- 
   
+  #Passing variables to a dataframe
+  marg_effects_df <- as.data.frame(marg_effects)
+  
+  # Assign column names as row names
+  column_names <- gsub("^X", "", column_names)  # Remove "X" from row names
+  row.names(marg_effects_df) <- column_names
+  
+  #Renaming the Marginal effect Column dataframe
+  col_names <- paste("marginal_effect", 1:ncol(marg_effects_df))
+  colnames(marg_effects_df) <- col_names
+ 
+  return(marg_effects_df)
   
   }
 
