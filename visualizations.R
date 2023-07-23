@@ -3,6 +3,7 @@ library(corrplot)
 library(RColorBrewer)
 
 
+visual_data <- read.csv('final_dataset.csv')
 # correlation plot of the correlated variables in the data set with correlation threshold set at  65% 
 # Using the pearson Coefficient to check for Multi-collinearity between variables in the data set.
 correlation_matrix <- cor(final_join, use = "pairwise.complete.obs")
@@ -48,7 +49,6 @@ correlated_values = c('hit_object_off_carriageway', 'vehicle_manoeuvre', 'vehicl
 correlation_matrix <- cor(final_join[, correlated_values], use = "pairwise.complete.obs")
 
 #Visualizing correlated variables
-# Create a fancy correlation plot
 correlation_plot <- corrplot(correlation_matrix, 
                              type = 'upper', 
                              order = 'hclust', 
@@ -59,3 +59,5 @@ correlation_plot <- corrplot(correlation_matrix,
                              col=brewer.pal(n=8, name="RdYlBu"), # color palette
                              title="Correlation plot of the injury  dataset", # plot title
                              mar=c(0,0,1,0)) # margins around plot
+
+

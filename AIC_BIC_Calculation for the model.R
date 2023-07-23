@@ -18,3 +18,4 @@ calculate_AIC_BIC <- function(model, n) {
 estimates <- calculate_AIC_BIC(model_ziop, n = 9624)
 estimates$AIC
 estimates$BIC
+
