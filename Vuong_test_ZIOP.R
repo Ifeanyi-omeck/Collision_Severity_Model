@@ -4,7 +4,7 @@
 # Specifically, the test is designed for evaluating the Zero-Inflated Ordered Probit (ZIOP) model and the Traditional Ordered Probit model within the CLM package.
 # The goal of this function is to evaluate the model fit between the ZIOP model and the Traditional Ordered Probit model.
 
-vuong_test <- function(trad_ordinal_model, ZIOP_model) {
+vuong_test <- function(trad_ordinal_model,  ZIOP_model) {
   
   # Voung test for comparing the Traditional Ordered Probit model and the Zero-Inflated Ordered Probit model.
   # trad_ordinal_model: Traditional Ordered Probit model.
@@ -94,8 +94,8 @@ vuong_test <- function(trad_ordinal_model, ZIOP_model) {
   diffmsq <- (mlog - mean(mlog))^2
   sumdms <- sum(diffmsq)
   
-  # Calculating the Voung test statistic.
-  vuongopiopc <- (sqrt(len1) * (1 / len1) * sum(mlog)) / sqrt((1 / len1) * sumdms)
+  # Calculating the Vuong test statistic.
+  vuong_test <- (sqrt(len1) * (1 / len1) * sum(mlog)) / sqrt((1 / len1) * sumdms)
   
-  return(vuongopiopc)
+  return(vuong_test)
 }
