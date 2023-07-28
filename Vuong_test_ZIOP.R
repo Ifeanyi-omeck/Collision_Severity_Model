@@ -72,14 +72,6 @@ calculate_probabilities <- function(model, data){
 
 
 
-
-
-
-
-
-
-
-
 # This function applies the Voung Test (Voung 1989) to assess two non-nested models. 
 # Specifically, the test is designed for evaluating the Zero-Inflated Ordered Probit (ZIOP) model and the Traditional Ordered Probit model within the CLM package.
 # The goal of this function is to evaluate the model fit between the ZIOP model and the Traditional Ordered Probit model.
