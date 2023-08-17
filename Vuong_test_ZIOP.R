@@ -1,4 +1,42 @@
-library(MASS) 
+library(MASS)
+library(dplyr)
+library(tidyverse)
+
+########################## Calculate Probabilty function ##############################################
+# The function "calculate_probabilities()" calculates the fitted probabilities for each category
+# of the response variable in the ZIOP model by:
+# 1. Extracting the explanatory variables.
+# 2. Computing the product of the data and the model's coefficients.
+# 3. Calculating cut-point probabilities (thresholds) for the ordered variable.
+
+
+#######################The Vuong test function ############################################################
+# The function "vuong_test()" implements the Vuong test by:
+# 1. Extracting Information: Length of the data, response, and explanatory variables 
+# from both Traditional Ordered Probit and ZIOP models.
+
+# 2. Preparing Data: Creating a model matrix and multiplying explanatory variables by coefficients
+# to compute the predicted value of the response variable.
+
+# 3. Calculating Probabilities: Calling `calculate_probabilities()` to get predicted probabilities from the ZIOP model.
+
+# 4. Creating Indicator Matrix: For each category of the response variable.
+
+# 5. Computing Probabilities: For each observation being in each category, using thresholds
+# from the Traditional Ordered Probit model and predicted probabilities from ZIOP.
+
+# 6. Calculating Weighted Probabilities: For each observation and category.
+
+# 7.'mlog' takes the natural logarithm of 'm2', representing the log-likelihood for each observation and category.
+# 'diffmsq' calculates the squared differences between each element of 'mlog' and the mean of 'mlog'.
+# 'sumdms' calculates the sum of these squared differences.
+
+
+# 8.Calculate the numerator by Multiplying the square root of the sample size (len1) by the mean of log-likelihoods (mlog)
+#  Calculate the denominator by  taking the square root of the mean of the squared differences (sumdms). 
+
+# Then divide the numerator by the denominator to get the voung score.
+
 
 # Calculate the Probabilites to used in the Vuong Test
 calculate_probabilities <- function(model, data){
@@ -24,7 +62,7 @@ calculate_probabilities <- function(model, data){
   inflated_data$intercept <- rep(intercept,  nrow(inflated_data))
   
   # Reorder columns in 'inflated_data' to place 'intercept' first
-  inflated_data <- inflated_data %>% select(intercept, everything())
+  inflated_data <- inflated_data[, c("intercept", setdiff(names(inflated_data), "intercept"))]
   
   # Convert the 'intercept' column values to integer
   inflated_data$intercept <- unlist(inflated_data$intercept)
@@ -81,7 +119,7 @@ vuong_test <- function(trad_ordinal_model,  ZIOP_model, data) {
   # Voung test for comparing the Traditional Ordered Probit model and the Zero-Inflated Ordered Probit model.
   # trad_ordinal_model: Traditional Ordered Probit model.
   # ZIOP_model: Zero-Inflated Ordered Probit model.
-
+  
   # Extracting the length of the data.
   len1 <- trad_ordinal_model$n
   
@@ -143,7 +181,7 @@ vuong_test <- function(trad_ordinal_model,  ZIOP_model, data) {
   probs[, 1] <- pnorm(float_threshold[[1]] - x_variable_sum) / predict_prob[, 1]
   
   # Calculating the probability of being in the last category.
-  probs[, num_categories] <- (1 - pnorm(float_threshold[num_categories - 2] - x_variable_sum)) / predict_prob[, (num_categories - 1)]
+  probs[, num_categories] <- (1 - pnorm(float_threshold[num_categories - 1] - x_variable_sum)) / predict_prob[, num_categories]
   
   # Calculating the probabilities of being in the intermediate categories.
   for (i in 2:(num_categories - 1)) {
@@ -168,8 +206,6 @@ vuong_test <- function(trad_ordinal_model,  ZIOP_model, data) {
   
   # Calculating the log-likelihood for each observation and category.
   mlog <- log(m2)
-  
-  
   diffmsq <- (mlog - mean(mlog)) **2
   sumdms <- sum(diffmsq)
   
@@ -178,10 +214,6 @@ vuong_test <- function(trad_ordinal_model,  ZIOP_model, data) {
   denominator =  sqrt((1 / len1) * sumdms)
   
   vuong_test <- numerator / denominator 
-  
   #Returning the Vuong test
   return(vuong_test)
 }
-
-# Voung test between Ordinal Model and Zero inflated Ordered Probit model
-vuong_test(first_ordinal_model, first_ziop_model, data_without_levels)
