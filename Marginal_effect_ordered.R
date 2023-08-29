@@ -122,7 +122,7 @@ marginal_effect_ordered <- function(ZIOP_MODEL, data, rho) {
   row.names(ordered_probit_effect) <- col_names_x
   
   # renaming the columns for the Ordered probit section.
-  colnames(ordered_probit_effect)[colnames(ordered_probit_effect) %in% c("V1", "V2", "V3")] <- c("Minor Injury", 
+  colnames(ordered_probit_effect)[colnames(ordered_probit_effect) %in% c("V1", "V2", "V3")] <- c("Slight Injury", 
                                                                                                  "Serious Injury", "Fatal Injury")
   
   # Return various Marginal effect component
